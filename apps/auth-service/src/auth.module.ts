@@ -9,8 +9,11 @@ import { TokenService } from './infrastructure/security/token.service';
 import { RegisterUseCase } from './application/use-cases/register.usecase';
 import { LoginUseCase } from './application/use-cases/login.usecase';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.usecase';
+import { AuthController } from './interfaces/controllers/auth.controller';
+import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
 
 @Module({
+    controllers: [AuthController],
     providers: [
         PrismaService,
         {
@@ -28,6 +31,7 @@ import { RefreshTokenUseCase } from './application/use-cases/refresh-token.useca
         RegisterUseCase,
         LoginUseCase,
         RefreshTokenUseCase,
+        JwtAuthGuard,
     ],
     exports: [
         CREDENTIAL_REPOSITORY,
@@ -37,6 +41,7 @@ import { RefreshTokenUseCase } from './application/use-cases/refresh-token.useca
         RegisterUseCase,
         LoginUseCase,
         RefreshTokenUseCase,
+        JwtAuthGuard,
     ],
 })
 export class AuthModule { }
