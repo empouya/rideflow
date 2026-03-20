@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "ts-node src/main.ts",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
     "start": "node dist/src/main.js",
     "test": "jest",
     "lint": "eslint \"src/**/*.ts\""
