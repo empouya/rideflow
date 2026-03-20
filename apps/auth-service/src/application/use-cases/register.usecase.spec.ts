@@ -2,6 +2,7 @@ import { RegisterUseCase } from './register.usecase';
 import { ICredentialRepository } from '../../domain/repositories/credential.repository.interface';
 import { IPasswordService } from '../ports/password.service.interface';
 import { ITokenService, TokenPair } from '../ports/token.service.interface';
+import { IEventPublisher } from '../../events/publishers/event-publisher.interface';
 import { EmailAlreadyExistsException } from '../../domain/exceptions/auth.exceptions';
 import { Credential, AuthProvider } from '../../domain/entities/credential.entity';
 
@@ -22,6 +23,10 @@ const mockTokenService: jest.Mocked<ITokenService> = {
     verifyRefreshToken: jest.fn(),
 };
 
+const mockEventPublisher: jest.Mocked<IEventPublisher> = {
+    publish: jest.fn(),
+};
+
 describe('RegisterUseCase', () => {
     let useCase: RegisterUseCase;
 
@@ -31,6 +36,7 @@ describe('RegisterUseCase', () => {
             mockCredentialRepository,
             mockPasswordService,
             mockTokenService,
+            mockEventPublisher,
         );
     });
 
@@ -46,6 +52,7 @@ describe('RegisterUseCase', () => {
             new Credential('user-123', 'test@rideflow.com', 'hashed_password', AuthProvider.LOCAL, new Date()),
         );
         mockTokenService.generateTokenPair.mockReturnValue(tokenPair);
+        mockEventPublisher.publish.mockResolvedValue(undefined);
 
         const result = await useCase.execute({
             email: 'test@rideflow.com',
@@ -56,6 +63,9 @@ describe('RegisterUseCase', () => {
         expect(mockCredentialRepository.findByEmail).toHaveBeenCalledWith('test@rideflow.com');
         expect(mockPasswordService.hash).toHaveBeenCalledWith('SecurePass123');
         expect(mockCredentialRepository.save).toHaveBeenCalled();
+        expect(mockEventPublisher.publish).toHaveBeenCalledWith(
+            expect.objectContaining({ eventType: 'auth.user_registered' }),
+        );
         expect(mockTokenService.generateTokenPair).toHaveBeenCalled();
     });
 
@@ -70,6 +80,7 @@ describe('RegisterUseCase', () => {
 
         expect(mockPasswordService.hash).not.toHaveBeenCalled();
         expect(mockCredentialRepository.save).not.toHaveBeenCalled();
+        expect(mockEventPublisher.publish).not.toHaveBeenCalled();
     });
 
     it('should throw an error for an invalid email format', async () => {

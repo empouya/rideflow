@@ -16,6 +16,10 @@ import {
     TOKEN_SERVICE,
     TokenPair,
 } from '../ports/token.service.interface';
+import {
+    IEventPublisher,
+    EVENT_PUBLISHER,
+} from '../../events/publishers/event-publisher.interface';
 import { logger } from '../../common/logger/logger.service';
 
 export interface RegisterInput {
@@ -31,6 +35,8 @@ export class RegisterUseCase {
         private readonly passwordService: IPasswordService,
         @Inject(TOKEN_SERVICE)
         private readonly tokenService: ITokenService,
+        @Inject(EVENT_PUBLISHER)
+        private readonly eventPublisher: IEventPublisher,
     ) { }
 
     async execute(input: RegisterInput): Promise<TokenPair> {
@@ -53,7 +59,23 @@ export class RegisterUseCase {
 
         await this.credentialRepository.save(credential);
 
-        logger.info({ userId: credential.userId, email: credential.email }, 'User registered successfully');
+        await this.eventPublisher.publish({
+            eventType: 'auth.user_registered',
+            payload: {
+                userId: credential.userId,
+                email: credential.email,
+                timestamp: new Date().toISOString(),
+            },
+            metadata: {
+                version: '1.0',
+                source: 'auth-service',
+            },
+        });
+
+        logger.info(
+            { userId: credential.userId, email: credential.email },
+            'User registered successfully',
+        );
 
         return this.tokenService.generateTokenPair({
             userId: credential.userId,

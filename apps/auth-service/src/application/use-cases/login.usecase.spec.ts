@@ -2,6 +2,7 @@ import { LoginUseCase } from './login.usecase';
 import { ICredentialRepository } from '../../domain/repositories/credential.repository.interface';
 import { IPasswordService } from '../ports/password.service.interface';
 import { ITokenService, TokenPair } from '../ports/token.service.interface';
+import { IEventPublisher } from '../../events/publishers/event-publisher.interface';
 import { InvalidCredentialsException } from '../../domain/exceptions/auth.exceptions';
 import { Credential, AuthProvider } from '../../domain/entities/credential.entity';
 
@@ -22,6 +23,10 @@ const mockTokenService: jest.Mocked<ITokenService> = {
     verifyRefreshToken: jest.fn(),
 };
 
+const mockEventPublisher: jest.Mocked<IEventPublisher> = {
+    publish: jest.fn(),
+};
+
 describe('LoginUseCase', () => {
     let useCase: LoginUseCase;
 
@@ -31,6 +36,7 @@ describe('LoginUseCase', () => {
             mockCredentialRepository,
             mockPasswordService,
             mockTokenService,
+            mockEventPublisher,
         );
     });
 
@@ -45,6 +51,7 @@ describe('LoginUseCase', () => {
         );
         mockPasswordService.compare.mockResolvedValue(true);
         mockTokenService.generateTokenPair.mockReturnValue(tokenPair);
+        mockEventPublisher.publish.mockResolvedValue(undefined);
 
         const result = await useCase.execute({
             email: 'test@rideflow.com',
@@ -54,6 +61,9 @@ describe('LoginUseCase', () => {
         expect(result).toEqual(tokenPair);
         expect(mockCredentialRepository.findByEmail).toHaveBeenCalledWith('test@rideflow.com');
         expect(mockPasswordService.compare).toHaveBeenCalledWith('SecurePass123', 'hashed_password');
+        expect(mockEventPublisher.publish).toHaveBeenCalledWith(
+            expect.objectContaining({ eventType: 'auth.user_logged_in' }),
+        );
         expect(mockTokenService.generateTokenPair).toHaveBeenCalled();
     });
 
@@ -65,6 +75,7 @@ describe('LoginUseCase', () => {
         ).rejects.toThrow(InvalidCredentialsException);
 
         expect(mockPasswordService.compare).not.toHaveBeenCalled();
+        expect(mockEventPublisher.publish).not.toHaveBeenCalled();
     });
 
     it('should throw InvalidCredentialsException when password is wrong', async () => {
@@ -77,6 +88,7 @@ describe('LoginUseCase', () => {
             useCase.execute({ email: 'test@rideflow.com', password: 'WrongPassword' }),
         ).rejects.toThrow(InvalidCredentialsException);
 
+        expect(mockEventPublisher.publish).not.toHaveBeenCalled();
         expect(mockTokenService.generateTokenPair).not.toHaveBeenCalled();
     });
 });

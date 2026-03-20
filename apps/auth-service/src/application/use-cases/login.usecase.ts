@@ -14,6 +14,10 @@ import {
     TOKEN_SERVICE,
     TokenPair,
 } from '../ports/token.service.interface';
+import {
+    IEventPublisher,
+    EVENT_PUBLISHER,
+} from '../../events/publishers/event-publisher.interface';
 import { logger } from '../../common/logger/logger.service';
 
 export interface LoginInput {
@@ -29,6 +33,8 @@ export class LoginUseCase {
         private readonly passwordService: IPasswordService,
         @Inject(TOKEN_SERVICE)
         private readonly tokenService: ITokenService,
+        @Inject(EVENT_PUBLISHER)
+        private readonly eventPublisher: IEventPublisher,
     ) { }
 
     async execute(input: LoginInput): Promise<TokenPair> {
@@ -49,7 +55,23 @@ export class LoginUseCase {
             throw new InvalidCredentialsException();
         }
 
-        logger.info({ userId: credential.userId, email: credential.email }, 'User logged in successfully');
+        await this.eventPublisher.publish({
+            eventType: 'auth.user_logged_in',
+            payload: {
+                userId: credential.userId,
+                email: credential.email,
+                timestamp: new Date().toISOString(),
+            },
+            metadata: {
+                version: '1.0',
+                source: 'auth-service',
+            },
+        });
+
+        logger.info(
+            { userId: credential.userId, email: credential.email },
+            'User logged in successfully',
+        );
 
         return this.tokenService.generateTokenPair({
             userId: credential.userId,
