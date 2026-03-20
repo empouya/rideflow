@@ -16,6 +16,7 @@ import {
     TOKEN_SERVICE,
     TokenPair,
 } from '../ports/token.service.interface';
+import { logger } from '../../common/logger/logger.service';
 
 export interface RegisterInput {
     email: string;
@@ -37,6 +38,7 @@ export class RegisterUseCase {
 
         const existing = await this.credentialRepository.findByEmail(email.toString());
         if (existing) {
+            logger.warn({ email: email.toString() }, 'Registration failed: email already exists');
             throw new EmailAlreadyExistsException(email.toString());
         }
 
@@ -50,6 +52,8 @@ export class RegisterUseCase {
         });
 
         await this.credentialRepository.save(credential);
+
+        logger.info({ userId: credential.userId, email: credential.email }, 'User registered successfully');
 
         return this.tokenService.generateTokenPair({
             userId: credential.userId,

@@ -1,8 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { Email } from '../../domain/value-objects/email.vo';
-import {
-    InvalidCredentialsException,
-} from '../../domain/exceptions/auth.exceptions';
+import { InvalidCredentialsException } from '../../domain/exceptions/auth.exceptions';
 import {
     ICredentialRepository,
     CREDENTIAL_REPOSITORY,
@@ -16,6 +14,7 @@ import {
     TOKEN_SERVICE,
     TokenPair,
 } from '../ports/token.service.interface';
+import { logger } from '../../common/logger/logger.service';
 
 export interface LoginInput {
     email: string;
@@ -37,6 +36,7 @@ export class LoginUseCase {
 
         const credential = await this.credentialRepository.findByEmail(email.toString());
         if (!credential) {
+            logger.warn({ email: email.toString() }, 'Login failed: user not found');
             throw new InvalidCredentialsException();
         }
 
@@ -45,8 +45,11 @@ export class LoginUseCase {
             credential.passwordHash,
         );
         if (!isValid) {
+            logger.warn({ email: email.toString() }, 'Login failed: invalid password');
             throw new InvalidCredentialsException();
         }
+
+        logger.info({ userId: credential.userId, email: credential.email }, 'User logged in successfully');
 
         return this.tokenService.generateTokenPair({
             userId: credential.userId,
