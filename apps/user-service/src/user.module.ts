@@ -6,8 +6,11 @@ import { PrismaUserProfileRepository } from './infrastructure/db/user-profile.re
 import { CreateUserProfileUseCase } from './application/use-cases/create-user-profile.usecase';
 import { GetUserProfileUseCase } from './application/use-cases/get-user-profile.usecase';
 import { UpdateUserProfileUseCase } from './application/use-cases/update-user-profile.usecase';
+import { UserController } from './interfaces/controllers/user.controller';
+import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
 
 @Module({
+    controllers: [UserController],
     providers: [
         PrismaService,
         {
@@ -23,6 +26,7 @@ import { UpdateUserProfileUseCase } from './application/use-cases/update-user-pr
         CreateUserProfileUseCase,
         GetUserProfileUseCase,
         UpdateUserProfileUseCase,
+        JwtAuthGuard,
     ],
     exports: [
         USER_PROFILE_REPOSITORY,
@@ -31,6 +35,7 @@ import { UpdateUserProfileUseCase } from './application/use-cases/update-user-pr
         CreateUserProfileUseCase,
         GetUserProfileUseCase,
         UpdateUserProfileUseCase,
+        JwtAuthGuard,
     ],
 })
 export class UserModule { }
