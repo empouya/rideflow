@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserProfileUseCase } from '../../application/use-cases/create-user-profile.usecase';
 import { AuthUserRegisteredEvent } from '../contracts/auth.user-registered.event';
+import { logger } from '../../common/logger/logger.service';
 
 @Injectable()
 export class AuthUserRegisteredConsumer {
@@ -9,15 +10,9 @@ export class AuthUserRegisteredConsumer {
     ) { }
 
     async handle(event: AuthUserRegisteredEvent): Promise<void> {
-        console.log(
-            JSON.stringify({
-                level: 30,
-                time: Date.now(),
-                msg: `Consuming event: ${event.eventType}`,
-                eventType: event.eventType,
-                userId: event.payload.userId,
-                email: event.payload.email,
-            }),
+        logger.info(
+            { eventType: event.eventType, userId: event.payload.userId },
+            `Consuming event: ${event.eventType}`,
         );
 
         await this.createUserProfileUseCase.execute({

@@ -9,6 +9,7 @@ import {
     IEventPublisher,
     EVENT_PUBLISHER,
 } from '../ports/event-publisher.interface';
+import { logger } from '../../common/logger/logger.service';
 
 export interface CreateUserProfileInput {
     userId: string;
@@ -26,6 +27,7 @@ export class CreateUserProfileUseCase {
     async execute(input: CreateUserProfileInput): Promise<UserProfile> {
         const existing = await this.userProfileRepository.findById(input.userId);
         if (existing) {
+            logger.warn({ userId: input.userId }, 'Profile creation failed: user already exists');
             throw new UserAlreadyExistsException(input.userId);
         }
 
@@ -49,6 +51,11 @@ export class CreateUserProfileUseCase {
                 source: 'user-service',
             },
         });
+
+        logger.info(
+            { userId: saved.userId, name: saved.name, role: saved.role },
+            'User profile created successfully',
+        );
 
         return saved;
     }

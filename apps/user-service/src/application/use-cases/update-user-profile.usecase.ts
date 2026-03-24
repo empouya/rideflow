@@ -9,6 +9,7 @@ import {
     IEventPublisher,
     EVENT_PUBLISHER,
 } from '../ports/event-publisher.interface';
+import { logger } from '../../common/logger/logger.service';
 
 export interface UpdateUserProfileInput {
     userId: string;
@@ -29,6 +30,7 @@ export class UpdateUserProfileUseCase {
         const existing = await this.userProfileRepository.findById(input.userId);
 
         if (!existing) {
+            logger.warn({ userId: input.userId }, 'Profile update failed: user not found');
             throw new UserNotFoundException(input.userId);
         }
 
@@ -54,6 +56,8 @@ export class UpdateUserProfileUseCase {
                 source: 'user-service',
             },
         });
+
+        logger.info({ userId: saved.userId, name: saved.name }, 'User profile updated successfully');
 
         return saved;
     }

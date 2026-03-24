@@ -3,18 +3,17 @@ import {
     IEventPublisher,
     DomainEvent,
 } from '../../application/ports/event-publisher.interface';
+import { logger } from '../../common/logger/logger.service';
 
 @Injectable()
 export class InMemoryEventPublisher implements IEventPublisher {
     async publish(event: DomainEvent): Promise<void> {
-        console.log(
-            JSON.stringify({
-                level: 30,
-                time: Date.now(),
-                msg: `Event published: ${event.eventType}`,
+        logger.info(
+            {
                 eventType: event.eventType,
                 payload: event.payload,
-            }),
+            },
+            `Event published: ${event.eventType}`,
         );
     }
 }
