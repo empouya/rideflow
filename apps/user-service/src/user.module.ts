@@ -8,6 +8,8 @@ import { GetUserProfileUseCase } from './application/use-cases/get-user-profile.
 import { UpdateUserProfileUseCase } from './application/use-cases/update-user-profile.usecase';
 import { UserController } from './interfaces/controllers/user.controller';
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
+import { InMemoryEventPublisher } from './events/publishers/in-memory.publisher';
+import { AuthUserRegisteredConsumer } from './events/consumers/auth-user-registered.consumer';
 
 @Module({
     controllers: [UserController],
@@ -19,14 +21,13 @@ import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
         },
         {
             provide: EVENT_PUBLISHER,
-            useClass: class {
-                async publish() { }
-            },
+            useClass: InMemoryEventPublisher,
         },
         CreateUserProfileUseCase,
         GetUserProfileUseCase,
         UpdateUserProfileUseCase,
         JwtAuthGuard,
+        AuthUserRegisteredConsumer,
     ],
     exports: [
         USER_PROFILE_REPOSITORY,
@@ -36,6 +37,7 @@ import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
         GetUserProfileUseCase,
         UpdateUserProfileUseCase,
         JwtAuthGuard,
+        AuthUserRegisteredConsumer,
     ],
 })
 export class UserModule { }
