@@ -5,3 +5,4 @@ dist/
 prisma/migrations/dev/
 coverage/
 .pnpm-store/
+repomix-output.xml
