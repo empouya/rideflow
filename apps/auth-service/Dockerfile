@@ -1,67 +1,43 @@
-FROM node:24-alpine AS builder
+# ---------- BASE ----------
+FROM node:24-alpine AS base
+RUN corepack enable
 
-RUN npm install -g pnpm@10.24.0
+# ---------- BUILDER ----------
+FROM base AS builder
 
 WORKDIR /app
 
-# Copy workspace config
-COPY pnpm-workspace.yaml ./
-COPY package.json ./
-COPY pnpm-lock.yaml ./
-COPY tsconfig.base.json ./
+# Copy only workspace essentials
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.base.json ./
 
-# Copy service package.json
-COPY apps/auth-service/package.json ./apps/auth-service/
-
-# Install dependencies
-RUN pnpm install --frozen-lockfile
-
-# Copy source
+# Copy service
 COPY apps/auth-service ./apps/auth-service
 
+# Install ONLY this service deps
+RUN pnpm install --frozen-lockfile
+
+# Move into service
+WORKDIR /app/apps/auth-service
+
 # Generate Prisma client
-RUN cd apps/auth-service && pnpm exec prisma generate
+RUN pnpm prisma generate
 
-# Build
-RUN cd apps/auth-service && pnpm build
+# Build NestJS app
+RUN pnpm build
 
-# ---- Runner stage ----
-FROM node:24-alpine AS runner
-
-RUN npm install -g pnpm@10.24.0
-
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# ---------- RUNTIME ----------
+FROM base AS runner
 
 WORKDIR /app
 
-# Copy workspace config
-COPY pnpm-workspace.yaml ./
-COPY package.json ./
-COPY pnpm-lock.yaml ./
-COPY tsconfig.base.json ./
+# Copy node_modules (only filtered ones)
+COPY --from=builder /app/node_modules ./node_modules
 
-# Copy service package.json
-COPY apps/auth-service/package.json ./apps/auth-service/
-
-# Install production dependencies only
-RUN pnpm install --frozen-lockfile --prod
-
-# Copy built output from builder
-COPY --from=builder /app/apps/auth-service/dist ./apps/auth-service/dist
-
-# Copy prisma schema for migrations
-COPY apps/auth-service/prisma ./apps/auth-service/prisma
-
-# Generate Prisma client in runner
-RUN cd apps/auth-service && pnpm exec prisma generate
-
-# Set correct ownership
-RUN chown -R appuser:appgroup /app
-
-USER appuser
+# Copy built service
+COPY --from=builder /app/apps/auth-service ./apps/auth-service
 
 WORKDIR /app/apps/auth-service
 
-EXPOSE 3000
+ENV NODE_ENV=production
 
 CMD ["node", "dist/main.js"]
