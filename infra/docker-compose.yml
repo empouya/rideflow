@@ -66,6 +66,24 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+
+  user-service:
+    image: rideflow/user-service:latest
+    container_name: user-service
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER_USER}:${POSTGRES_USER_PASSWORD}@user-database:5432/${POSTGRES_USER_DB}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+    depends_on:
+      user-database:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   database:
   user-database:
