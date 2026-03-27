@@ -10,9 +10,10 @@ import { PrismaDriverRepository } from './infrastructure/db/driver.repository';
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
 import { InMemoryEventPublisher } from './events/publishers/in-memory.publisher';
 import { UserProfileCreatedConsumer } from './events/consumers/user-profile-created.consumer';
+import { DriverController } from './interfaces/controllers/driver.controller';
 
 @Module({
-    controllers: [],
+    controllers: [DriverController],
     providers: [
         PrismaService,
         {
