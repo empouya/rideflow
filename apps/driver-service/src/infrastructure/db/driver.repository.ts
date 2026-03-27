@@ -62,7 +62,6 @@ export class PrismaDriverRepository implements IDriverRepository {
                         inspectionExpiresAt: driver.vehicle.inspectionExpiresAt,
                     },
                     create: {
-                        driverUserId: driver.userId,
                         make: driver.vehicle.make,
                         model: driver.vehicle.model,
                         color: driver.vehicle.color,
