@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Driver {
+  userId              String        @id @map("user_id")
+  status              String        @default("OFFLINE")
+  onboardingStatus    String        @default("PENDING") @map("onboarding_status")
+  licenseNumber       String?       @unique @map("license_number")
+  licenseCountry      String?       @map("license_country")
+  licenseExpiresAt    DateTime?     @map("license_expires_at")
+  approvedAt          DateTime?     @map("approved_at")
+  lastStatusChangedAt DateTime      @default(now()) @map("last_status_changed_at")
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+  vehicle             DriverVehicle?
+
+  @@map("drivers")
+}
+
+model DriverVehicle {
+  driverUserId         String   @id @map("driver_user_id")
+  make                 String
+  model                String
+  color                String
+  plateNumber          String   @unique @map("plate_number")
+  year                 Int
+  category             String   @default("STANDARD")
+  seatCount            Int      @default(4) @map("seat_count")
+  inspectionExpiresAt  DateTime @map("inspection_expires_at")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+  driver               Driver   @relation(fields: [driverUserId], references: [userId], onDelete: Cascade)
+
+  @@map("driver_vehicles")
+}
