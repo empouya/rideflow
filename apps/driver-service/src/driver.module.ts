@@ -8,6 +8,8 @@ import { PrismaService } from './database/prisma.service';
 import { DRIVER_REPOSITORY } from './domain/repositories/driver.repository.interface';
 import { PrismaDriverRepository } from './infrastructure/db/driver.repository';
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
+import { InMemoryEventPublisher } from './events/publishers/in-memory.publisher';
+import { UserProfileCreatedConsumer } from './events/consumers/user-profile-created.consumer';
 
 @Module({
     controllers: [],
@@ -19,15 +21,14 @@ import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
         },
         {
             provide: EVENT_PUBLISHER,
-            useClass: class {
-                async publish() { }
-            },
+            useClass: InMemoryEventPublisher
         },
         ProvisionDriverUseCase,
         RegisterDriverUseCase,
         GetDriverUseCase,
         UpdateDriverStatusUseCase,
         JwtAuthGuard,
+        UserProfileCreatedConsumer
     ],
     exports: [
         DRIVER_REPOSITORY,
@@ -38,6 +39,7 @@ import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
         GetDriverUseCase,
         UpdateDriverStatusUseCase,
         JwtAuthGuard,
+        UserProfileCreatedConsumer
     ],
 })
 export class DriverModule { }
