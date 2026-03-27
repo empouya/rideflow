@@ -7,6 +7,7 @@ import { UpdateDriverStatusUseCase } from './application/use-cases/update-driver
 import { PrismaService } from './database/prisma.service';
 import { DRIVER_REPOSITORY } from './domain/repositories/driver.repository.interface';
 import { PrismaDriverRepository } from './infrastructure/db/driver.repository';
+import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
 
 @Module({
     controllers: [],
@@ -26,6 +27,7 @@ import { PrismaDriverRepository } from './infrastructure/db/driver.repository';
         RegisterDriverUseCase,
         GetDriverUseCase,
         UpdateDriverStatusUseCase,
+        JwtAuthGuard,
     ],
     exports: [
         DRIVER_REPOSITORY,
@@ -35,6 +37,7 @@ import { PrismaDriverRepository } from './infrastructure/db/driver.repository';
         RegisterDriverUseCase,
         GetDriverUseCase,
         UpdateDriverStatusUseCase,
+        JwtAuthGuard,
     ],
 })
 export class DriverModule { }
