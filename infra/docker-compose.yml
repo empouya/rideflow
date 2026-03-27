@@ -33,6 +33,23 @@ services:
         timeout: 5s
         retries: 5
 
+  driver-database:
+      image: postgres:18
+      container_name: driver-database
+      environment:
+        POSTGRES_DB: ${POSTGRES_DRIVER_DB}
+        POSTGRES_USER: ${POSTGRES_DRIVER_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_DRIVER_PASSWORD}
+      ports:
+        - "5434:5432"
+      volumes:
+        - driver-database:/var/lib/postgresql
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_DRIVER_USER} -d ${POSTGRES_DRIVER_DB}"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+
   cache:
     image: redis:8.6
     container_name: cache
@@ -87,4 +104,5 @@ services:
 volumes:
   database:
   user-database:
+  driver-database:
   cache:
