@@ -67,9 +67,9 @@ services:
     image: rideflow/auth-service:latest
     container_name: auth-service
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
-      PORT: 3000
+      PORT: 3001
       NODE_ENV: production
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
@@ -88,9 +88,9 @@ services:
     image: rideflow/user-service:latest
     container_name: user-service
     ports:
-      - "3001:3001"
+      - "3002:3002"
     environment:
-      PORT: 3001
+      PORT: 3002
       NODE_ENV: production
       DATABASE_URL: postgresql://${POSTGRES_USER_USER}:${POSTGRES_USER_PASSWORD}@user-database:5432/${POSTGRES_USER_DB}
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
@@ -105,9 +105,9 @@ services:
     image: rideflow/driver-service:latest
     container_name: driver-service
     ports:
-      - "3002:3002"
+      - "3003:3003"
     environment:
-      PORT: 3002
+      PORT: 3003
       NODE_ENV: production
       DATABASE_URL: postgresql://${POSTGRES_DRIVER_USER}:${POSTGRES_DRIVER_PASSWORD}@driver-database:5432/${POSTGRES_DRIVER_DB}
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
