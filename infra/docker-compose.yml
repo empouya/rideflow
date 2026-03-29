@@ -118,6 +118,31 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  api-gateway:
+    image: rideflow/api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      AUTH_SERVICE_URL: http://auth-service:3001
+      USER_SERVICE_URL: http://user-service:3002
+      DRIVER_SERVICE_URL: http://driver-service:3003
+      ALLOWED_ORIGINS: "*"
+      THROTTLE_TTL: 60000
+      THROTTLE_LIMIT: 100
+      THROTTLE_AUTH_LIMIT: 10
+    depends_on:
+      auth-service:
+        condition: service_started
+      user-service:
+        condition: service_started
+      driver-service:
+        condition: service_started
+    restart: unless-stopped
+
 volumes:
   database:
   user-database:
