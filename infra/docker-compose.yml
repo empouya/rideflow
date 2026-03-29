@@ -63,6 +63,69 @@ services:
       timeout: 5s
       retries: 5
 
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-log:/var/lib/zookeeper/log
+    healthcheck:
+      test: ["CMD-SHELL", "echo srvr | nc -w 2 localhost 2181 | grep Mode || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka
+    ports:
+      - "9094:9094"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9094
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9094
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list > /dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  kafka-topic-init:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka-topic-init
+    depends_on:
+      kafka:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic auth.user_registered --partitions 1 --replication-factor 1 &&
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic auth.user_logged_in --partitions 1 --replication-factor 1 &&
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic user.profile_created --partitions 1 --replication-factor 1 &&
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic user.profile_updated --partitions 1 --replication-factor 1 &&
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic driver.registered --partitions 1 --replication-factor 1 &&
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic driver.status_updated --partitions 1 --replication-factor 1 &&
+      kafka-topics --bootstrap-server kafka:9092 --list
+      "
+    restart: "no"
+
   auth-service:
     image: rideflow/auth-service:latest
     container_name: auth-service
@@ -148,3 +211,6 @@ volumes:
   user-database:
   driver-database:
   cache:
+  zookeeper-data:
+  zookeeper-log:
+  kafka-data:
