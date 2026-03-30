@@ -13,6 +13,8 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.base.json ./
 # Copy service
 COPY apps/user-service ./apps/user-service
 
+COPY packages/kafka-client ./packages/kafka-client
+
 # Install ONLY this service deps
 RUN pnpm install --frozen-lockfile
 

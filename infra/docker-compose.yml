@@ -159,6 +159,9 @@ services:
       NODE_ENV: production
       DATABASE_URL: postgresql://${POSTGRES_USER_USER}:${POSTGRES_USER_PASSWORD}@user-database:5432/${POSTGRES_USER_DB}
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      KAFKA_BROKERS: ${KAFKA_BROKER_INTERNAL}
+      KAFKA_CLIENT_ID: rideflow-user-service
+
     depends_on:
       user-database:
         condition: service_healthy

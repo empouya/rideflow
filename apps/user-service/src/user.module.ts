@@ -8,7 +8,7 @@ import { GetUserProfileUseCase } from './application/use-cases/get-user-profile.
 import { UpdateUserProfileUseCase } from './application/use-cases/update-user-profile.usecase';
 import { UserController } from './interfaces/controllers/user.controller';
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
-import { InMemoryEventPublisher } from './events/publishers/in-memory.publisher';
+import { UserKafkaEventPublisher } from './events/publishers/kafka.publisher';
 import { AuthUserRegisteredConsumer } from './events/consumers/auth-user-registered.consumer';
 
 @Module({
@@ -21,7 +21,7 @@ import { AuthUserRegisteredConsumer } from './events/consumers/auth-user-registe
         },
         {
             provide: EVENT_PUBLISHER,
-            useClass: InMemoryEventPublisher,
+            useClass: UserKafkaEventPublisher,
         },
         CreateUserProfileUseCase,
         GetUserProfileUseCase,
