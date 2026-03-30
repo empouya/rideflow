@@ -12,7 +12,7 @@ import { LoginUseCase } from './application/use-cases/login.usecase';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.usecase';
 import { AuthController } from './interfaces/controllers/auth.controller';
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
-import { InMemoryEventPublisher } from './events/publishers/in-memory.publisher';
+import { AuthKafkaEventPublisher } from './events/publishers/kafka.publisher';
 
 @Module({
     controllers: [AuthController],
@@ -32,7 +32,7 @@ import { InMemoryEventPublisher } from './events/publishers/in-memory.publisher'
         },
         {
             provide: EVENT_PUBLISHER,
-            useClass: InMemoryEventPublisher,
+            useClass: AuthKafkaEventPublisher,
         },
         RegisterUseCase,
         LoginUseCase,

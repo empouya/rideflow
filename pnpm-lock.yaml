@@ -117,6 +117,9 @@ importers:
       '@prisma/client':
         specifier: ^6.19.2
         version: 6.19.2(prisma@6.19.2(typescript@5.9.3))(typescript@5.9.3)
+      '@rideflow/kafka-client':
+        specifier: workspace:*
+        version: link:../../packages/kafka-client
       bcrypt:
         specifier: ^6.0.0
         version: 6.0.0

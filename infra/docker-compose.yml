@@ -139,6 +139,8 @@ services:
       JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN}
+      KAFKA_BROKERS: ${KAFKA_BROKER_INTERNAL}
+      KAFKA_CLIENT_ID: rideflow-auth-service
     depends_on:
       database:
         condition: service_healthy
