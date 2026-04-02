@@ -10,6 +10,7 @@ import { UserController } from './interfaces/controllers/user.controller';
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
 import { UserKafkaEventPublisher } from './events/publishers/kafka.publisher';
 import { AuthUserRegisteredConsumer } from './events/consumers/auth-user-registered.consumer';
+import { AuthEventsKafkaConsumer } from './events/consumers/auth-events.consumer';
 
 @Module({
     controllers: [UserController],
@@ -28,6 +29,7 @@ import { AuthUserRegisteredConsumer } from './events/consumers/auth-user-registe
         UpdateUserProfileUseCase,
         JwtAuthGuard,
         AuthUserRegisteredConsumer,
+        AuthEventsKafkaConsumer,
     ],
     exports: [
         USER_PROFILE_REPOSITORY,
@@ -38,6 +40,7 @@ import { AuthUserRegisteredConsumer } from './events/consumers/auth-user-registe
         UpdateUserProfileUseCase,
         JwtAuthGuard,
         AuthUserRegisteredConsumer,
+        AuthEventsKafkaConsumer,
     ],
 })
 export class UserModule { }

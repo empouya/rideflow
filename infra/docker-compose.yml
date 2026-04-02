@@ -161,6 +161,8 @@ services:
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
       KAFKA_BROKERS: ${KAFKA_BROKER_INTERNAL}
       KAFKA_CLIENT_ID: rideflow-user-service
+      KAFKA_CONSUMER_GROUP_ID: user-service-group
+
 
     depends_on:
       user-database:
