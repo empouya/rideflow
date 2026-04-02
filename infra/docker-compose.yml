@@ -146,6 +146,10 @@ services:
         condition: service_healthy
       cache:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
+      kafka-topic-init:
+        condition: service_completed_successfully
     restart: unless-stopped
 
 
@@ -162,13 +166,15 @@ services:
       KAFKA_BROKERS: ${KAFKA_BROKER_INTERNAL}
       KAFKA_CLIENT_ID: rideflow-user-service
       KAFKA_CONSUMER_GROUP_ID: user-service-group
-
-
     depends_on:
       user-database:
         condition: service_healthy
       cache:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
+      kafka-topic-init:
+        condition: service_completed_successfully
     restart: unless-stopped
 
   driver-service:
@@ -189,6 +195,10 @@ services:
         condition: service_healthy
       cache:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
+      kafka-topic-init:
+        condition: service_completed_successfully
     restart: unless-stopped
 
   api-gateway:
