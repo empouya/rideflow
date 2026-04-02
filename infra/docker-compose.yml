@@ -122,6 +122,7 @@ services:
       kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic user.profile_updated --partitions 1 --replication-factor 1 &&
       kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic driver.registered --partitions 1 --replication-factor 1 &&
       kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic driver.status_updated --partitions 1 --replication-factor 1 &&
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic driver.location_updated --partitions 1 --replication-factor 1 &&
       kafka-topics --bootstrap-server kafka:9092 --list
       "
     restart: "no"
