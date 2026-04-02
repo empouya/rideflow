@@ -214,6 +214,9 @@ importers:
       '@prisma/client':
         specifier: ^6.19.2
         version: 6.19.2(prisma@6.19.2(typescript@5.9.3))(typescript@5.9.3)
+      '@rideflow/kafka-client':
+        specifier: workspace:*
+        version: link:../../packages/kafka-client
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1

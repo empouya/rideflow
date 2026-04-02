@@ -181,6 +181,9 @@ services:
       NODE_ENV: production
       DATABASE_URL: postgresql://${POSTGRES_DRIVER_USER}:${POSTGRES_DRIVER_PASSWORD}@driver-database:5432/${POSTGRES_DRIVER_DB}
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      KAFKA_BROKERS: ${KAFKA_BROKER_INTERNAL}
+      KAFKA_CLIENT_ID: rideflow-driver-service
+      KAFKA_CONSUMER_GROUP_ID: driver-service-group
     depends_on:
       driver-database:
         condition: service_healthy

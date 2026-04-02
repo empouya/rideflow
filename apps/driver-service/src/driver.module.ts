@@ -8,9 +8,10 @@ import { PrismaService } from './database/prisma.service';
 import { DRIVER_REPOSITORY } from './domain/repositories/driver.repository.interface';
 import { PrismaDriverRepository } from './infrastructure/db/driver.repository';
 import { JwtAuthGuard } from './infrastructure/guards/jwt-auth.guard';
-import { InMemoryEventPublisher } from './events/publishers/in-memory.publisher';
+import { DriverKafkaEventPublisher } from './events/publishers/kafka.publisher';
 import { UserProfileCreatedConsumer } from './events/consumers/user-profile-created.consumer';
 import { DriverController } from './interfaces/controllers/driver.controller';
+import { UserEventsKafkaConsumer } from './events/consumers/user-events.consumer';
 
 @Module({
     controllers: [DriverController],
@@ -22,14 +23,15 @@ import { DriverController } from './interfaces/controllers/driver.controller';
         },
         {
             provide: EVENT_PUBLISHER,
-            useClass: InMemoryEventPublisher
+            useClass: DriverKafkaEventPublisher
         },
         ProvisionDriverUseCase,
         RegisterDriverUseCase,
         GetDriverUseCase,
         UpdateDriverStatusUseCase,
         JwtAuthGuard,
-        UserProfileCreatedConsumer
+        UserProfileCreatedConsumer,
+        UserEventsKafkaConsumer,
     ],
     exports: [
         DRIVER_REPOSITORY,
@@ -40,7 +42,8 @@ import { DriverController } from './interfaces/controllers/driver.controller';
         GetDriverUseCase,
         UpdateDriverStatusUseCase,
         JwtAuthGuard,
-        UserProfileCreatedConsumer
+        UserProfileCreatedConsumer,
+        UserEventsKafkaConsumer,
     ],
 })
 export class DriverModule { }
