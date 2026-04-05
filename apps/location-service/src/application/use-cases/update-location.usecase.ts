@@ -5,6 +5,7 @@ import {
     LOCATION_REPOSITORY,
 } from '../../domain/repositories/location.repository.interface';
 import { DriverLocation } from '../../domain/value-objects/driver-location.vo';
+import { logger } from '../../common/logger/logger.service';
 
 export interface UpdateLocationInput {
     driverId: string;
@@ -42,5 +43,14 @@ export class UpdateLocationUseCase {
                 source: 'location-service',
             },
         });
+
+        logger.info(
+            {
+                driverId: location.driverId,
+                latitude: location.latitude,
+                longitude: location.longitude,
+            },
+            'Driver location updated successfully',
+        );
     }
 }

@@ -5,6 +5,7 @@ import {
 } from '../../domain/repositories/location.repository.interface';
 import { DriverLocation } from '../../domain/value-objects/driver-location.vo';
 import { NearbyQuery } from '../../domain/value-objects/nearby-query.vo';
+import { logger } from '../../common/logger/logger.service';
 
 export interface FindNearbyDriversInput {
     latitude: number;
@@ -27,6 +28,18 @@ export class FindNearbyDriversUseCase {
             limit: input.limit,
         });
 
-        return this.locationRepository.findNearby(query);
+        const results = await this.locationRepository.findNearby(query);
+
+        logger.info(
+            {
+                latitude: query.latitude,
+                longitude: query.longitude,
+                radiusKm: query.radiusKm,
+                count: results.length,
+            },
+            'Nearby drivers located successfully',
+        );
+
+        return results;
     }
 }
