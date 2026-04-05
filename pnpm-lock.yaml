@@ -296,6 +296,12 @@ importers:
       '@rideflow/kafka-client':
         specifier: workspace:*
         version: link:../../packages/kafka-client
+      class-transformer:
+        specifier: ^0.5.1
+        version: 0.5.1
+      class-validator:
+        specifier: ^0.15.1
+        version: 0.15.1
       ioredis:
         specifier: ^5.10.1
         version: 5.10.1
