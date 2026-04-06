@@ -22,6 +22,7 @@ export class HealthController {
             'auth-service': this.config.getOrThrow<string>('AUTH_SERVICE_URL'),
             'user-service': this.config.getOrThrow<string>('USER_SERVICE_URL'),
             'driver-service': this.config.getOrThrow<string>('DRIVER_SERVICE_URL'),
+            'location-service': this.config.getOrThrow<string>('LOCATION_SERVICE_URL'),
         };
 
         const downstream: Record<string, 'ok' | 'degraded'> = {};

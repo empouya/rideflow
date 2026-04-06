@@ -4,6 +4,7 @@ import { JwtAuthMiddleware } from '../middleware/jwt-auth.middleware';
 import { createAuthProxy } from './auth.proxy';
 import { createUserProxy } from './user.proxy';
 import { createDriverProxy } from './driver.proxy';
+import { createLocationProxy } from './location.proxy';
 
 @Module({
     imports: [ConfigModule],
@@ -37,6 +38,15 @@ export class ProxyModule implements NestModule {
                 { path: 'drivers/register', method: RequestMethod.POST },
                 { path: 'drivers/:id/status', method: RequestMethod.PATCH },
                 { path: 'drivers/:id', method: RequestMethod.GET },
+            );
+
+        // ── LOCATiON ROUTES — JWT required ───────────────────────────────
+        consumer
+            .apply(JwtAuthMiddleware, createLocationProxy(this.config))
+            .forRoutes(
+                { path: 'locations/update', method: RequestMethod.POST },
+                { path: 'locations/nearby', method: RequestMethod.GET },
+                { path: 'locations/drivers/:id', method: RequestMethod.GET },
             );
     }
 }
